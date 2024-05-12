@@ -656,9 +656,10 @@ a:focus {
   .sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu,
   .sidebar-mini.sidebar-collapse .sidebar-menu > li > a > .pull-right,
   .sidebar-mini.sidebar-collapse .sidebar-menu li.header {
-    display: none !important;
-    -webkit-transform: translateZ(0);
-  }
+  display: none !important;
+  -webkit-transform: translateZ(0); /* Properti berlian untuk WebKit browsers */
+  transform: translateZ(0); /* Properti standar */
+}
   .sidebar-mini.sidebar-collapse .main-header .logo {
     width: 50px;
   }

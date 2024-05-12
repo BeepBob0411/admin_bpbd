@@ -1,27 +1,11 @@
-@inject('request', 'Illuminate\Http\Request')
 @extends('layouts.app')
 
 @section('content')
-    <h3 class="page-title">@lang('quickadmin.expense-category.title')</h3>
-    @can('expense_category_create')
-    <p>
-        <a href="{{ route('admin.expense_categories.create') }}" class="btn btn-success">@lang('quickadmin.qa_add_new')</a>
-        
-        @if(!is_null(Auth::getUser()->role_id) && config('quickadmin.can_see_all_records_role_id') == Auth::getUser()->role_id)
-            @if(Session::get('ExpenseCategory.filter', 'all') == 'my')
-                <a href="?filter=all" class="btn btn-default">Show all records</a>
-            @else
-                <a href="?filter=my" class="btn btn-default">Filter my records</a>
-            @endif
-        @endif
-    </p>
-    @endcan
-
-    
+    <h3 class="page-title">@lang('Data Laporan Masyarakat')</h3>
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            @lang('quickadmin.qa_list')
+            @lang('list')
         </div>
 
         <div class="panel-body table-responsive">
@@ -32,7 +16,14 @@
                             <th style="text-align:center;"><input type="checkbox" id="select-all" /></th>
                         @endcan
 
-                        <th>@lang('quickadmin.expense-category.fields.name')</th>
+                        <th>@lang('nama')</th>
+                        <th>@lang('telepon')</th>
+                        <th>@lang('nama_pelapor')</th>
+                        <th>@lang('foto_bencana')</th>
+                        <th>@lang('jenis_bencana')</th>
+                        <th>@lang('lokasi_bencana')</th>
+                        <th>@lang('keterangan_bencana')</th>
+                        <th>@lang('waktu_pengiriman_laporan')</th>
                         <th>&nbsp;</th>
 
                     </tr>
@@ -47,21 +38,28 @@
                                 @endcan
 
                                 <td field-key='name'>{{ $expense_category->name }}</td>
+                                <td field-key='telepon'>{{ $expense_category->telepon }}</td>
+                                <td field-key='nama_pelapor'>{{ $expense_category->nama_pelapor }}</td>
+                                <td field-key='foto_bencana'>{{ $expense_category->foto_bencana }}</td>
+                                <td field-key='jenis_bencana'>{{ $expense_category->jenis_bencana }}</td>
+                                <td field-key='lokasi_bencana'>{{ $expense_category->lokasi_bencana }}</td>
+                                <td field-key='keterangan_bencana'>{{ $expense_category->keterangan_bencana }}</td>
+                                <td field-key='tanggal_jam_pengiriman_laporan'>{{ $expense_category->waktu_pengiriman_laporan }}</td>
                                 <td>
                                     @can('expense_category_view')
-                                    <a href="{{ route('admin.expense_categories.show',[$expense_category->id]) }}" class="btn btn-xs btn-primary">@lang('quickadmin.qa_view')</a>
+                                    <a href="{{ route('admin.expense_categories.show',[$expense_category->id]) }}" class="btn btn-xs btn-primary">@lang('view')</a>
                                     @endcan
                                     @can('expense_category_edit')
-                                    <a href="{{ route('admin.expense_categories.edit',[$expense_category->id]) }}" class="btn btn-xs btn-info">@lang('quickadmin.qa_edit')</a>
+                                    <a href="{{ route('admin.expense_categories.edit',[$expense_category->id]) }}" class="btn btn-xs btn-info">@lang('edit')</a>
                                     @endcan
                                     @can('expense_category_delete')
-{!! Form::open(array(
+                                        {!! Form::open(array(
                                         'style' => 'display: inline-block;',
                                         'method' => 'DELETE',
-                                        'onsubmit' => "return confirm('".trans("quickadmin.qa_are_you_sure")."');",
+                                        'onsubmit' => "return confirm('".trans("are_you_sure")."');",
                                         'route' => ['admin.expense_categories.destroy', $expense_category->id])) !!}
-                                    {!! Form::submit(trans('quickadmin.qa_delete'), array('class' => 'btn btn-xs btn-danger')) !!}
-                                    {!! Form::close() !!}
+                                        {!! Form::submit(trans('delete'), array('class' => 'btn btn-xs btn-danger')) !!}
+                                        {!! Form::close() !!}
                                     @endcan
                                 </td>
 
@@ -69,7 +67,7 @@
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="7">@lang('quickadmin.qa_no_entries_in_table')</td>
+                            <td colspan="10">@lang('no_entries_in_table')</td>
                         </tr>
                     @endif
                 </tbody>

@@ -5,8 +5,6 @@
     <section class="sidebar">
         <ul class="sidebar-menu">
 
-             
-
             <li class="{{ $request->segment(1) == 'home' ? 'active' : '' }}">
                 <a href="{{ url('/') }}">
                     <i class="fa fa-wrench"></i>
@@ -14,7 +12,6 @@
                 </a>
             </li>
 
-            
             @can('user_management_access')
             <li class="treeview">
                 <a href="#">
@@ -25,9 +22,9 @@
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                
-                @can('role_access')
-                <li class="{{ $request->segment(2) == 'roles' ? 'active active-sub' : '' }}">
+
+                    @can('role_access')
+                    <li class="{{ $request->segment(2) == 'roles' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.roles.index') }}">
                             <i class="fa fa-briefcase"></i>
                             <span class="title">
@@ -35,9 +32,9 @@
                             </span>
                         </a>
                     </li>
-                @endcan
-                @can('user_access')
-                <li class="{{ $request->segment(2) == 'users' ? 'active active-sub' : '' }}">
+                    @endcan
+                    @can('user_access')
+                    <li class="{{ $request->segment(2) == 'users' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.users.index') }}">
                             <i class="fa fa-user"></i>
                             <span class="title">
@@ -45,73 +42,73 @@
                             </span>
                         </a>
                     </li>
-                @endcan
+                    @endcan
                 </ul>
             </li>
             @endcan
             @can('expense_management_access')
             <li class="treeview">
                 <a href="#">
-                    <i class="fa fa-money"></i>
+                    <i class="fa fa-cogs"></i>
                     <span class="title">@lang('quickadmin.expense-management.title')</span>
                     <span class="pull-right-container">
                         <i class="fa fa-angle-left pull-right"></i>
                     </span>
                 </a>
                 <ul class="treeview-menu">
-                
-                @can('expense_category_access')
-                <li class="{{ $request->segment(2) == 'expense_categories' ? 'active active-sub' : '' }}">
+
+                    @can('expense_category_access')
+                    <li class="{{ $request->segment(2) == 'expense_categories' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.expense_categories.index') }}">
-                            <i class="fa fa-list"></i>
+                            <i class="fa fa-file-text"></i> <!-- Laporan -->
                             <span class="title">
                                 @lang('quickadmin.expense-category.title')
                             </span>
                         </a>
                     </li>
-                @endcan
-                @can('income_category_access')
-                <li class="{{ $request->segment(2) == 'income_categories' ? 'active active-sub' : '' }}">
+                    @endcan
+                    @can('income_category_access')
+                    <li class="{{ $request->segment(2) == 'income_categories' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.income_categories.index') }}">
-                            <i class="fa fa-list"></i>
+                            <i class="fa fa-newspaper-o"></i> <!-- Ganti dengan ikon Berita -->
                             <span class="title">
                                 @lang('quickadmin.income-category.title')
                             </span>
                         </a>
                     </li>
-                @endcan
-                @can('income_access')
-                <li class="{{ $request->segment(2) == 'incomes' ? 'active active-sub' : '' }}">
+                    @endcan
+                    @can('income_access')
+                    <li class="{{ $request->segment(2) == 'incomes' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.incomes.index') }}">
-                            <i class="fa fa-arrow-circle-right"></i>
+                            <i class="fa fa-warning"></i> <!-- Ganti dengan ikon peringatan Dini -->
                             <span class="title">
                                 @lang('quickadmin.income.title')
                             </span>
                         </a>
                     </li>
-                @endcan
-                @can('expense_access')
-                <li class="{{ $request->segment(2) == 'expenses' ? 'active active-sub' : '' }}">
+                    @endcan
+                    @can('expense_access')
+                    <li class="{{ $request->segment(2) == 'expenses' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.expenses.index') }}">
-                            <i class="fa fa-arrow-circle-left"></i>
+                            <i class="fa fa-phone"></i> <!-- Ganti dengan ikon kontak darurat -->
                             <span class="title">
                                 @lang('quickadmin.expense.title')
                             </span>
                         </a>
                     </li>
-                @endcan
-                @can('monthly_report_access')
-                <li class="{{ $request->segment(2) == 'monthly_reports' ? 'active active-sub' : '' }}">
+                    @endcan
+                    @can('monthly_report_access')
+                    <li class="{{ $request->segment(2) == 'monthly_reports' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.monthly_reports.index') }}">
-                            <i class="fa fa-line-chart"></i>
+                            <i class="fa fa-sitemap"></i> <!-- Ganti dengan ikon struktur organisasi -->
                             <span class="title">
                                 @lang('quickadmin.monthly-report.title')
                             </span>
                         </a>
                     </li>
-                @endcan
-                @can('currency_access')
-                <li class="{{ $request->segment(2) == 'currencies' ? 'active active-sub' : '' }}">
+                    @endcan
+                    @can('currency_access')
+                    <li class="{{ $request->segment(2) == 'currencies' ? 'active active-sub' : '' }}">
                         <a href="{{ route('admin.currencies.index') }}">
                             <i class="fa fa-gears"></i>
                             <span class="title">
@@ -119,16 +116,10 @@
                             </span>
                         </a>
                     </li>
-                @endcan
+                    @endcan
                 </ul>
             </li>
             @endcan
-
-            
-
-            
-
-
 
             <li class="{{ $request->segment(1) == 'change_password' ? 'active' : '' }}">
                 <a href="{{ route('auth.change_password') }}">
@@ -146,4 +137,3 @@
         </ul>
     </section>
 </aside>
-

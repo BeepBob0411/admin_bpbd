@@ -1,4 +1,4 @@
-<?phpEXPENSE MANAGEMENT
+<?php
 
 return [
 	

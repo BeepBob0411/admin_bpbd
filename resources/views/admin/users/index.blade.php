@@ -1,4 +1,3 @@
-@inject('request', 'Illuminate\Http\Request')
 @extends('layouts.app')
 
 @section('content')
@@ -6,11 +5,8 @@
     @can('user_create')
         <p>
             <a href="{{ route('admin.users.create') }}" class="btn btn-success">@lang('quickadmin.qa_add_new')</a>
-
         </p>
     @endcan
-
-
 
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -18,20 +14,20 @@
         </div>
 
         <div class="panel-body table-responsive">
-            <table
-                class="table table-bordered table-striped {{ count($users) > 0 ? 'datatable' : '' }} @can('user_delete') dt-select @endcan">
+            <table class="table table-bordered table-striped {{ count($users) > 0 ? 'datatable' : '' }} @can('user_delete') dt-select @endcan">
                 <thead>
                     <tr>
                         @can('user_delete')
                             <th style="text-align:center;"><input type="checkbox" id="select-all" /></th>
                         @endcan
 
-                        <th>@lang('quickadmin.users.fields.name')</th>
                         <th>@lang('quickadmin.users.fields.email')</th>
-                        <th>@lang('quickadmin.users.fields.currency')</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>NIK</th>
+                        <th>Phone</th>
                         <th>@lang('quickadmin.users.fields.role')</th>
                         <th>&nbsp;</th>
-
                     </tr>
                 </thead>
 
@@ -43,18 +39,18 @@
                                     <td></td>
                                 @endcan
 
-                                <td field-key='name'>{{ $user->name }}</td>
                                 <td field-key='email'>{{ $user->email }}</td>
-                                <td field-key='email'>{{ $user->currency->title }}</td>
+                                <td field-key='firstname'>{{ $user->firstname }}</td>
+                                <td field-key='lastname'>{{ $user->lastname }}</td>
+                                <td field-key='nik'>{{ $user->nik }}</td>
+                                <td field-key='phone'>{{ $user->phone }}</td>
                                 <td field-key='role'>{{ $user->role->title  }}</td>
                                 <td>
                                     @can('user_view')
-                                        <a href="{{ route('admin.users.show', [$user->id]) }}"
-                                            class="btn btn-xs btn-primary">@lang('quickadmin.qa_view')</a>
+                                        <a href="{{ route('admin.users.show', [$user->id]) }}" class="btn btn-xs btn-primary">@lang('quickadmin.qa_view')</a>
                                     @endcan
                                     @can('user_edit')
-                                        <a href="{{ route('admin.users.edit', [$user->id]) }}"
-                                            class="btn btn-xs btn-info">@lang('quickadmin.qa_edit')</a>
+                                        <a href="{{ route('admin.users.edit', [$user->id]) }}" class="btn btn-xs btn-info">@lang('quickadmin.qa_edit')</a>
                                     @endcan
                                     @can('user_delete')
                                         {!! Form::open([

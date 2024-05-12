@@ -12,36 +12,36 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('expense_category_id', trans('quickadmin.expense.fields.expense-category').'*', ['class' => 'control-label']) !!}
-                    {!! Form::select('expense_category_id', $expense_categories, old('expense_category_id'), ['class' => 'form-control select2', 'required' => '']) !!}
+                    {!! Form::label('nama', 'Nama*', ['class' => 'control-label']) !!}
+                    {!! Form::text('nama', old('nama'), ['class' => 'form-control', 'required' => '']) !!}
                     <p class="help-block"></p>
-                    @if($errors->has('expense_category_id'))
+                    @if($errors->has('nama'))
                         <p class="text-danger">
-                            {{ $errors->first('expense_category_id') }}
+                            {{ $errors->first('nama') }}
                         </p>
                     @endif
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('entry_date', trans('quickadmin.expense.fields.entry-date').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('entry_date', old('entry_date'), ['class' => 'form-control date', 'placeholder' => '', 'required' => '']) !!}
+                    {!! Form::label('nomor_darurat', 'Nomor Darurat*', ['class' => 'control-label']) !!}
+                    {!! Form::text('nomor_darurat', old('nomor_darurat'), ['class' => 'form-control', 'required' => '']) !!}
                     <p class="help-block"></p>
-                    @if($errors->has('entry_date'))
+                    @if($errors->has('nomor_darurat'))
                         <p class="text-danger">
-                            {{ $errors->first('entry_date') }}
+                            {{ $errors->first('nomor_darurat') }}
                         </p>
                     @endif
                 </div>
             </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('amount', trans('quickadmin.expense.fields.amount').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('amount', old('amount'), ['class' => 'form-control', 'id' => '', 'placeholder' => '', 'required' => '']) !!}
+                    {!! Form::label('gambar', 'Gambar*', ['class' => 'control-label']) !!}
+                    {!! Form::file('gambar', ['class' => 'form-control', 'required' => '']) !!}
                     <p class="help-block"></p>
-                    @if($errors->has('amount'))
+                    @if($errors->has('gambar'))
                         <p class="text-danger">
-                            {{ $errors->first('amount') }}
+                            {{ $errors->first('gambar') }}
                         </p>
                     @endif
                 </div>

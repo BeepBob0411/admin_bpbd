@@ -3,20 +3,20 @@
 return [
 	
 	'user-management' => [
-		'title' => 'User management',
+		'title' => 'Manajemen Pengguna',
 		'fields' => [
 		],
 	],
 	
 	'roles' => [
-		'title' => 'Roles',
+		'title' => 'Peran',
 		'fields' => [
 			'title' => 'Title',
 		],
 	],
 	
 	'users' => [
-		'title' => 'Users',
+		'title' => 'Pengguna',
 		'fields' => [
 			'name' => 'Name',
 			'email' => 'Email',
@@ -28,13 +28,13 @@ return [
 	],
 	
 	'expense-management' => [
-		'title' => 'Expense Management',
+		'title' => 'Manajemen Aplikasi',
 		'fields' => [
 		],
 	],
 	
 	'expense-category' => [
-		'title' => 'Expense Categories',
+		'title' => 'Laporan',
 		'fields' => [
 			'name' => 'Name',
 			'created-by' => 'Created by',
@@ -42,7 +42,7 @@ return [
 	],
 	
 	'income-category' => [
-		'title' => 'Income categories',
+		'title' => 'Berita',
 		'fields' => [
 			'name' => 'Name',
 			'created-by' => 'Created by',
@@ -50,7 +50,7 @@ return [
 	],
 	
 	'income' => [
-		'title' => 'Income',
+		'title' => 'Peringatan Dini',
 		'fields' => [
 			'income-category' => 'Income Category',
 			'entry-date' => 'Entry date',
@@ -60,7 +60,7 @@ return [
 	],
 	
 	'expense' => [
-		'title' => 'Expenses',
+		'title' => 'Kontak Darurat',
 		'fields' => [
 			'expense-category' => 'Expense Category',
 			'entry-date' => 'Entry date',
@@ -70,7 +70,7 @@ return [
 	],
 	
 	'monthly-report' => [
-		'title' => 'Monthly report',
+		'title' => 'Struktur Organisasi',
 		'fields' => [
 		],
 	],
@@ -320,5 +320,5 @@ return [
 	'qa_parse_csv' => 'Parse CSV',
 	'qa_import_data' => 'Import data',
 	'qa_imported_rows_to_table' => 'Imported :rows rows to :table table',
-	'quickadmin_title' => 'EXPENSE MANAGEMENT',
+	'quickadmin_title' => 'BPBD TOBA',
 ];
