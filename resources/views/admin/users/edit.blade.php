@@ -13,18 +13,6 @@
         <div class="panel-body">
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('name', trans('quickadmin.users.fields.name').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('name', old('name'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('name'))
-                        <p class="help-block">
-                            {{ $errors->first('name') }}
-                        </p>
-                    @endif
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 form-group">
                     {!! Form::label('email', trans('quickadmin.users.fields.email').'*', ['class' => 'control-label']) !!}
                     {!! Form::email('email', old('email'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
                     <p class="help-block"></p>
@@ -37,7 +25,7 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('password', trans('quickadmin.users.fields.password').'*', ['class' => 'control-label']) !!}
+                    {!! Form::label('password', trans('quickadmin.users.fields.password'), ['class' => 'control-label']) !!}
                     {!! Form::password('password', ['class' => 'form-control', 'placeholder' => '']) !!}
                     <p class="help-block"></p>
                     @if($errors->has('password'))
@@ -49,16 +37,28 @@
             </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
-                    {!! Form::label('currency_id', trans('quickadmin.users.fields.currency').'*', ['class' => 'control-label']) !!}
-                    {!! Form::select('currency_id', $currency, old('currency_id'), ['class' => 'form-control select2', 'required' => '']) !!}
+                    {!! Form::label('nik', trans('quickadmin.users.fields.nik').'*', ['class' => 'control-label']) !!}
+                    {!! Form::text('nik', old('nik'), ['class' => 'form-control', 'placeholder' => '', 'required' => '', 'pattern' => '\d{16}', 'title' => 'NIK must be 16 digits']) !!}
                     <p class="help-block"></p>
-                    @if($errors->has('currency_id'))
+                    @if($errors->has('nik'))
                         <p class="help-block">
-                            {{ $errors->first('currency_id') }}
+                            {{ $errors->first('nik') }}
                         </p>
                     @endif
                 </div>
-   
+            </div>
+            <div class="row">
+                <div class="col-xs-12 form-group">
+                    {!! Form::label('phone', trans('quickadmin.users.fields.phone').'*', ['class' => 'control-label']) !!}
+                    {!! Form::text('phone', old('phone'), ['class' => 'form-control', 'placeholder' => '', 'required' => '', 'pattern' => '\d*', 'title' => 'Phone number must be an integer']) !!}
+                    <p class="help-block"></p>
+                    @if($errors->has('phone'))
+                        <p class="help-block">
+                            {{ $errors->first('phonjae') }}
+                        </p>
+                    @endif
+                </div>
+            </div>
             <div class="row">
                 <div class="col-xs-12 form-group">
                     {!! Form::label('role_id', trans('quickadmin.users.fields.role').'*', ['class' => 'control-label']) !!}
@@ -71,11 +71,9 @@
                     @endif
                 </div>
             </div>
-            
         </div>
     </div>
 
     {!! Form::submit(trans('quickadmin.qa_update'), ['class' => 'btn btn-danger']) !!}
     {!! Form::close() !!}
 @stop
-

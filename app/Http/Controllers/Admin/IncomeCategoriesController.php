@@ -2,161 +2,130 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\IncomeCategory;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use Google\Cloud\Core\GeoPoint;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreIncomeCategoriesRequest;
-use App\Http\Requests\Admin\UpdateIncomeCategoriesRequest;
+use Google\Cloud\Firestore\FirestoreClient;
 
 class IncomeCategoriesController extends Controller
 {
-    /**
-     * Display a listing of IncomeCategory.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    protected $database;
+
+    public function __construct(FirestoreClient $database)
+    {
+        $this->database = $database;
+    }
+
     public function index()
     {
-        if (! Gate::allows('income_category_access')) {
-            return abort(401);
+        try {
+            $incomeCategories = $this->database->collection('berita')->documents();
+            return view('admin.income_categories.index', compact('incomeCategories'));
+        } catch (\Exception $e) {
+            return back()->withError('Gagal mengambil data kategori pendapatan. Pesan Kesalahan: '.$e->getMessage());
         }
-
-
-                $income_categories = IncomeCategory::all();
-
-        return view('admin.income_categories.index', compact('income_categories'));
     }
 
-    /**
-     * Show the form for creating new IncomeCategory.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        if (! Gate::allows('income_category_create')) {
-            return abort(401);
-        }
-        
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');
-
-        return view('admin.income_categories.create', compact('created_bies'));
+        return view('admin.income_categories.create');
     }
 
-    /**
-     * Store a newly created IncomeCategory in storage.
-     *
-     * @param  \App\Http\Requests\StoreIncomeCategoriesRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreIncomeCategoriesRequest $request)
+    public function store(Request $request)
     {
-        if (! Gate::allows('income_category_create')) {
-            return abort(401);
+        try {
+            // Validasi input di sini
+
+            $data = [
+                'id_berita' => uniqid(),
+                'nama_bencana' => $request->nama_bencana,
+                'tanggal_kejadian' => $request->tanggal_kejadian,
+                'waktu_kejadian' => $request->waktu_kejadian,
+                'lokasi_kejadian' => new GeoPoint($request->latitude, $request->longitude),
+                'gambar_berita' => $request->gambar_berita,
+                'deskripsi_berita' => $request->deskripsi_berita,
+            ];
+
+            $this->database->collection('berita')->add($data);
+
+            return redirect()->route('admin.income_categories.index')->withSuccess('Berita berhasil disimpan.');
+        } catch (\Exception $e) {
+            return back()->withError('Gagal membuat kategori pendapatan. Pesan Kesalahan: '.$e->getMessage());
         }
-        $income_category = IncomeCategory::create($request->all());
-
-
-
-        return redirect()->route('admin.income_categories.index');
     }
 
-
-    /**
-     * Show the form for editing IncomeCategory.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
-        if (! Gate::allows('income_category_edit')) {
-            return abort(401);
+        try {
+            $incomeCategoryRef = $this->database->collection('berita')->document($id);
+            $incomeCategory = $incomeCategoryRef->snapshot()->data();
+
+            return view('admin.income_categories.edit', compact('incomeCategory'));
+        } catch (\Exception $e) {
+            return back()->withError('Gagal mengambil kategori pendapatan untuk diedit. Pesan Kesalahan: '.$e->getMessage());
         }
-        
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');
-
-        $income_category = IncomeCategory::findOrFail($id);
-
-        return view('admin.income_categories.edit', compact('income_category', 'created_bies'));
     }
 
-    /**
-     * Update IncomeCategory in storage.
-     *
-     * @param  \App\Http\Requests\UpdateIncomeCategoriesRequest  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateIncomeCategoriesRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        if (! Gate::allows('income_category_edit')) {
-            return abort(401);
+        try {
+            // Validasi input di sini
+
+            $data = [
+                'nama_bencana' => $request->nama_bencana,
+                'tanggal_kejadian' => $request->tanggal_kejadian,
+                'waktu_kejadian' => $request->waktu_kejadian,
+                'lokasi_kejadian' => new GeoPoint($request->latitude, $request->longitude),
+                'gambar_berita' => $request->gambar_berita,
+                'deskripsi_berita' => $request->deskripsi_berita,
+            ];
+
+            $this->database->collection('berita')->document($id)->set($data);
+
+            return redirect()->route('admin.income_categories.index')->withSuccess('Kategori pendapatan berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return back()->withError('Gagal memperbarui kategori pendapatan. Pesan Kesalahan: '.$e->getMessage());
         }
-        $income_category = IncomeCategory::findOrFail($id);
-        $income_category->update($request->all());
-
-
-
-        return redirect()->route('admin.income_categories.index');
     }
 
-
-    /**
-     * Display IncomeCategory.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        if (! Gate::allows('income_category_view')) {
-            return abort(401);
-        }
-        
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');$incomes = \App\Income::where('income_category_id', $id)->get();
-
-        $income_category = IncomeCategory::findOrFail($id);
-
-        return view('admin.income_categories.show', compact('income_category', 'incomes'));
-    }
-
-
-    /**
-     * Remove IncomeCategory from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        if (! Gate::allows('income_category_delete')) {
-            return abort(401);
-        }
-        $income_category = IncomeCategory::findOrFail($id);
-        $income_category->delete();
+        try {
+            $this->database->collection('berita')->document($id)->delete();
 
-        return redirect()->route('admin.income_categories.index');
+            return redirect()->route('admin.income_categories.index')->withSuccess('Kategori pendapatan berhasil dihapus.');
+        } catch (\Exception $e) {
+            return back()->withError('Gagal menghapus kategori pendapatan. Pesan Kesalahan: '.$e->getMessage());
+        }
     }
 
-    /**
-     * Delete all selected IncomeCategory at once.
-     *
-     * @param Request $request
-     */
-    public function massDestroy(Request $request)
+    // Fungsi untuk membuat berita dari data laporan
+    public function createBeritaFromLaporan(Request $request)
     {
-        if (! Gate::allows('income_category_delete')) {
-            return abort(401);
-        }
-        if ($request->input('ids')) {
-            $entries = IncomeCategory::whereIn('id', $request->input('ids'))->get();
+        try {
+            // Validasi input di sini jika diperlukan
 
-            foreach ($entries as $entry) {
-                $entry->delete();
-            }
+            // Ambil data laporan dari koleksi "laporan"
+            $laporan = $this->database->collection('laporan')->document($request->laporan_id)->snapshot()->data();
+
+            // Buat data berita dari data laporan yang diambil
+            $data = [
+                'id_berita' => uniqid(),
+                'nama_bencana' => $laporan['disasterType'],
+                'tanggal_kejadian' => $laporan['timestamp']->toDate(),
+                'waktu_kejadian' => $laporan['timestamp']->toTimeString(),
+                'lokasi_kejadian' => new GeoPoint($laporan['location']->latitude(), $laporan['location']->longitude()),
+                'gambar_berita' => $laporan['imageUrl'],
+                'deskripsi_berita' => $laporan['description'],
+            ];
+
+            // Simpan data berita ke koleksi "berita"
+            $this->database->collection('berita')->add($data);
+
+            return redirect()->route('admin.income_categories.index')->withSuccess('Berita berhasil dibuat dari data laporan.');
+        } catch (\Exception $e) {
+            // Tangani kesalahan
+            return back()->withError('Gagal membuat berita dari data laporan. Pesan Kesalahan: '.$e->getMessage());
         }
     }
-
 }

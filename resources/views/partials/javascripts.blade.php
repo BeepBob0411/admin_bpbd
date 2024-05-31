@@ -1,11 +1,5 @@
 <script>
-    window.deleteButtonTrans = '{{ trans("quickadmin.qa_delete_selected") }}';
-    window.copyButtonTrans = '{{ trans("quickadmin.qa_copy") }}';
-    window.csvButtonTrans = '{{ trans("quickadmin.qa_csv") }}';
-    window.excelButtonTrans = '{{ trans("quickadmin.qa_excel") }}';
-    window.pdfButtonTrans = '{{ trans("quickadmin.qa_pdf") }}';
-    window.printButtonTrans = '{{ trans("quickadmin.qa_print") }}';
-    window.colvisButtonTrans = '{{ trans("quickadmin.qa_colvis") }}';
+    window._token = '{{ csrf_token() }}';
 </script>
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js"></script>
@@ -28,16 +22,13 @@
 <script src="{{ url('adminlte/plugins/fastclick/fastclick.js') }}"></script>
 <script src="{{ url('adminlte/js/app.min.js') }}"></script>
 <script>
-    window._token = '{{ csrf_token() }}';
-</script>
-<script>
     $.extend(true, $.fn.dataTable.defaults, {
         "language": {
             "url": "http://cdn.datatables.net/plug-ins/1.10.16/i18n/English.json"
         }
     });
 
-    @if (auth()->check())
+    @if (auth()->check() && auth()->user()->currency)
     $('#moneyFormat').maskMoney({
         // The symbol to be displayed before the value entered by the user
         prefix:'{{ auth()->user()->currency->symbol }}',
@@ -45,19 +36,12 @@
         thousands:'{{ auth()->user()->currency->money_format_thousands }}',
         // The decimal separator
         decimal:'{{ auth()->user()->currency->money_format_decimal }}'
-    }); 
+    });
 
     $('#expense, #income').submit(function(){
         var value = $('#moneyFormat').maskMoney('unmasked')[0];
         $('#moneyFormat').val(value);
     });
     @endif
-     
-
 </script>
-
- 
-
-
-
 @yield('javascript')

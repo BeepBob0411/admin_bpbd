@@ -1,90 +1,64 @@
 @extends('layouts.app')
 
 @section('content')
-    <h3 class="page-title">@lang('quickadmin.expense-category.title')</h3>
+    <h3 class="page-title">@lang('Data Laporan Masyarakat')</h3>
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            @lang('quickadmin.qa_view')
+            @lang('Detail Laporan')
         </div>
 
-        <div class="panel-body table-responsive">
+        <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <table class="table table-bordered table-striped">
+                    <table class="table table-bordered">
                         <tr>
-                            <th>@lang('quickadmin.expense-category.fields.name')</th>
-                            <td field-key='name'>{{ $expense_category->name }}</td>
+                            <th>@lang('Jenis Bencana')</th>
+                            <td>{{ $laporan['disasterType'] ?? 'N/A' }}</td>
                         </tr>
                         <tr>
-                            <th>@lang('quickadmin.expense-category.fields.created-by')</th>
-                            <td field-key='created_by'>{{ $expense_category->created_by->name or '' }}</td>
+                            <th>@lang('Image')</th>
+                            <td>
+                                @if(isset($laporan['imageUrl']))
+                                    <img src="{{ $laporan['imageUrl'] }}" alt="Report Image" style="max-width: 100px; height: auto;">
+                                @else
+                                    <span>@lang('No Image Available')</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Keterangan')</th>
+                            <td>{{ $laporan['description'] ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Latitude')</th>
+                            <td>{{ isset($laporan['location']) ? $laporan['location']->latitude() : 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Longitude')</th>
+                            <td>{{ isset($laporan['location']) ? $laporan['location']->longitude() : 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Status')</th>
+                            <td>{{ $laporan['status'] ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Waktu Pelaporan')</th>
+                            <td>
+                                @if(isset($laporan['timestamp']))
+                                    {{ $laporan['timestamp']->formatAsString() }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Pelapor')</th>
+                            <td>{{ $laporan['userId'] ?? 'N/A' }}</td>
                         </tr>
                     </table>
                 </div>
-            </div><!-- Nav tabs -->
-<ul class="nav nav-tabs" role="tablist">
-    
-<li role="presentation" class="active"><a href="#expense" aria-controls="expense" role="tab" data-toggle="tab">Expenses</a></li>
-</ul>
-
-<!-- Tab panes -->
-<div class="tab-content">
-    
-<div role="tabpanel" class="tab-pane active" id="expense">
-<table class="table table-bordered table-striped {{ count($expenses) > 0 ? 'datatable' : '' }}">
-    <thead>
-        <tr>
-            <th>@lang('quickadmin.expense.fields.expense-category')</th>
-                        <th>@lang('quickadmin.expense.fields.entry-date')</th>
-                        <th>@lang('quickadmin.expense.fields.amount')</th>
-                        <th>@lang('quickadmin.expense.fields.created-by')</th>
-                                                <th>&nbsp;</th>
-
-        </tr>
-    </thead>
-
-    <tbody>
-        @if (count($expenses) > 0)
-            @foreach ($expenses as $expense)
-                <tr data-entry-id="{{ $expense->id }}">
-                    <td field-key='expense_category'>{{ $expense->expense_category->name or '' }}</td>
-                                <td field-key='entry_date'>{{ $expense->entry_date }}</td>
-                                <td field-key='amount'>{{ $expense->amount }}</td>
-                                <td field-key='created_by'>{{ $expense->created_by->name or '' }}</td>
-                                                                <td>
-                                    @can('view')
-                                    <a href="{{ route('expenses.show',[$expense->id]) }}" class="btn btn-xs btn-primary">@lang('quickadmin.qa_view')</a>
-                                    @endcan
-                                    @can('edit')
-                                    <a href="{{ route('expenses.edit',[$expense->id]) }}" class="btn btn-xs btn-info">@lang('quickadmin.qa_edit')</a>
-                                    @endcan
-                                    @can('delete')
-{!! Form::open(array(
-                                        'style' => 'display: inline-block;',
-                                        'method' => 'DELETE',
-                                        'onsubmit' => "return confirm('".trans("quickadmin.qa_are_you_sure")."');",
-                                        'route' => ['expenses.destroy', $expense->id])) !!}
-                                    {!! Form::submit(trans('quickadmin.qa_delete'), array('class' => 'btn btn-xs btn-danger')) !!}
-                                    {!! Form::close() !!}
-                                    @endcan
-                                </td>
-
-                </tr>
-            @endforeach
-        @else
-            <tr>
-                <td colspan="9">@lang('quickadmin.qa_no_entries_in_table')</td>
-            </tr>
-        @endif
-    </tbody>
-</table>
-</div>
-</div>
-
-            <p>&nbsp;</p>
-
-            <a href="{{ route('admin.expense_categories.index') }}" class="btn btn-default">@lang('quickadmin.qa_back_to_list')</a>
+            </div>
         </div>
     </div>
-@stop
+@endsection

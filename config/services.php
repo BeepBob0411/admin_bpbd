@@ -35,6 +35,9 @@ return [
         'secret' => env('STRIPE_SECRET'),
     ],
 
+    'firestore' => [
+        'project_id' => env('resqube-bcc0b'),
+    ],
     
 
 ];

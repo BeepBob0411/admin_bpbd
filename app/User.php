@@ -19,9 +19,20 @@ use Hash;
 class User extends Authenticatable
 {
     use Notifiable;
-    protected $fillable = ['name', 'email', 'password', 'remember_token', 'role_id', 'currency_id'];
-    
-    
+    protected $fillable = ['firstname', 'lastname', 'nik', 'phone', 'email', 'password', 'role_id'];    
+
+    public static function rules()
+    {
+        return [
+            'firstname' => 'required',
+            'lastname' => 'required',
+            'nik' => 'required|numeric',
+            'phone' => 'required|numeric',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'role_id' => 'required',
+        ];
+    }    
     
     /**
      * Hash password

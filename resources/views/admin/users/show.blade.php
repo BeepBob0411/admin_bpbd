@@ -14,7 +14,7 @@
                     <table class="table table-bordered table-striped">
                         <tr>
                             <th>@lang('quickadmin.users.fields.name')</th>
-                            <td field-key='name'>{{ $user->name }}</td>
+                            <td field-key='name'>{{ $user->firstname }} {{ $user->lastname }}</td>
                         </tr>
                         <tr>
                             <th>@lang('quickadmin.users.fields.email')</th>

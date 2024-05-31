@@ -5,82 +5,84 @@
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            @lang('list')
+            @lang('List')
         </div>
 
         <div class="panel-body table-responsive">
-            <table class="table table-bordered table-striped {{ count($expense_categories) > 0 ? 'datatable' : '' }} @can('expense_category_delete') dt-select @endcan">
+            <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        @can('expense_category_delete')
-                            <th style="text-align:center;"><input type="checkbox" id="select-all" /></th>
-                        @endcan
-
-                        <th>@lang('nama')</th>
-                        <th>@lang('telepon')</th>
-                        <th>@lang('nama_pelapor')</th>
-                        <th>@lang('foto_bencana')</th>
-                        <th>@lang('jenis_bencana')</th>
-                        <th>@lang('lokasi_bencana')</th>
-                        <th>@lang('keterangan_bencana')</th>
-                        <th>@lang('waktu_pengiriman_laporan')</th>
-                        <th>&nbsp;</th>
-
+                        <th>@lang('Jenis Bencana')</th>
+                        <th>@lang('Gambar')</th>
+                        <th>@lang('Keterangan')</th>
+                        <th>@lang('Latitude')</th>
+                        <th>@lang('Longitude')</th>
+                        <th>@lang('Status')</th>
+                        <th>@lang('Waktu Pelaporan')</th>
+                        <th>@lang('Pelapor')</th>
+                        <th>@lang('Lihat Detail')</th>
                     </tr>
                 </thead>
-                
                 <tbody>
-                    @if (count($expense_categories) > 0)
-                        @foreach ($expense_categories as $expense_category)
-                            <tr data-entry-id="{{ $expense_category->id }}">
-                                @can('expense_category_delete')
-                                    <td></td>
-                                @endcan
-
-                                <td field-key='name'>{{ $expense_category->name }}</td>
-                                <td field-key='telepon'>{{ $expense_category->telepon }}</td>
-                                <td field-key='nama_pelapor'>{{ $expense_category->nama_pelapor }}</td>
-                                <td field-key='foto_bencana'>{{ $expense_category->foto_bencana }}</td>
-                                <td field-key='jenis_bencana'>{{ $expense_category->jenis_bencana }}</td>
-                                <td field-key='lokasi_bencana'>{{ $expense_category->lokasi_bencana }}</td>
-                                <td field-key='keterangan_bencana'>{{ $expense_category->keterangan_bencana }}</td>
-                                <td field-key='tanggal_jam_pengiriman_laporan'>{{ $expense_category->waktu_pengiriman_laporan }}</td>
+                    @if(isset($laporanData) && !empty($laporanData))
+                        @foreach($laporanData as $report)
+                            <tr>
+                                <td>{{ $report['disasterType'] }}</td>
                                 <td>
-                                    @can('expense_category_view')
-                                    <a href="{{ route('admin.expense_categories.show',[$expense_category->id]) }}" class="btn btn-xs btn-primary">@lang('view')</a>
-                                    @endcan
-                                    @can('expense_category_edit')
-                                    <a href="{{ route('admin.expense_categories.edit',[$expense_category->id]) }}" class="btn btn-xs btn-info">@lang('edit')</a>
-                                    @endcan
-                                    @can('expense_category_delete')
-                                        {!! Form::open(array(
-                                        'style' => 'display: inline-block;',
-                                        'method' => 'DELETE',
-                                        'onsubmit' => "return confirm('".trans("are_you_sure")."');",
-                                        'route' => ['admin.expense_categories.destroy', $expense_category->id])) !!}
-                                        {!! Form::submit(trans('delete'), array('class' => 'btn btn-xs btn-danger')) !!}
-                                        {!! Form::close() !!}
-                                    @endcan
+                                    @if(isset($report['imageUrl']) && !empty($report['imageUrl']))
+                                        <img src="{{ $report['imageUrl'] }}" alt="Report Image" style="max-width: 100px; height: auto;">
+                                    @else
+                                        <span>No Image Available</span>
+                                    @endif
                                 </td>
-
+                                <td>
+                                    @if(isset($report['description']))
+                                        {{ $report['description'] }}
+                                    @else
+                                        <span>No Description Available</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(isset($report['location']))
+                                        {{ $report['location']->latitude() }}
+                                    @else
+                                        <span>Not Available</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(isset($report['location']))
+                                        {{ $report['location']->longitude() }}
+                                    @else
+                                        <span>Not Available</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(isset($report['status']))
+                                        {{ $report['status'] }}
+                                    @else
+                                        <span>Not Available</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if(isset($report['timestamp']) && $report['timestamp'] instanceof \Google\Cloud\Core\Timestamp)
+                                        {{ $report['timestamp']->get()->format('Y-m-d H:i:s') }}
+                                    @else
+                                        <span>Not Available</span>
+                                    @endif
+                                </td>
+                                <td>{{ $report['userId'] }}</td>
+                                <td>
+                                    <a href="{{ route('admin.expense_categories.show', $report['id']) }}" class="btn btn-info">Detail</a>
+                                </td>
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="10">@lang('no_entries_in_table')</td>
+                            <td colspan="9">@lang('No data available')</td>
                         </tr>
                     @endif
                 </tbody>
             </table>
         </div>
     </div>
-@stop
-
-@section('javascript') 
-    <script>
-        @can('expense_category_delete')
-            window.route_mass_crud_entries_destroy = '{{ route('admin.expense_categories.mass_destroy') }}';
-        @endcan
-
-    </script>
 @endsection

@@ -2,138 +2,64 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\ExpenseCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Admin\StoreExpenseCategoriesRequest;
-use App\Http\Requests\Admin\UpdateExpenseCategoriesRequest;
-use Illuminate\Support\Facades\Session;
-// use App\Http\Helper\Input;
-use Illuminate\Support\Facades\Input;
+use Kreait\Firebase\Factory;
 
 class ExpenseCategoriesController extends Controller
 {
-    /**
-     * Display a listing of ExpenseCategory.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    protected $firestore;
+
+    public function __construct()
     {
-        if (! Gate::allows('expense_category_access')) {
-            return abort(401);
-        }
-        // if ($filterBy = Input::get('filter')) {
-        //     if ($filterBy == 'all') {
-        //         Session::put('ExpenseCategory.filter', 'all');
-        //     } elseif ($filterBy == 'my') {
-        //         Session::put('ExpenseCategory.filter', 'my');
-        //     }
-        // }
+        $serviceAccountPath = 'D:/project/admin_bpbd/serviceAccount.json'; // Jalur absolut ke file
 
-                $expense_categories = ExpenseCategory::all();
+        $factory = (new Factory)
+            ->withServiceAccount($serviceAccountPath)
+            ->withDatabaseUri('https://console.firebase.google.com/project/resqube-bcc0b/firestore/databases/-default-/data/~2Flaporan~2FM91A99MVCZ4DD6wL8KbN?hl=id'); // Ganti dengan URI database Firebase Anda
 
-        return view('admin.expense_categories.index', compact('expense_categories'));
+        $this->firestore = $factory->createFirestore()->database();
     }
 
     /**
-     * Show the form for creating new ExpenseCategory.
+     * Display a listing of reports from Firestore.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function index(Request $request)
     {
-        if (! Gate::allows('expense_category_create')) {
+        if (!Gate::allows('expense_category_access')) {
             return abort(401);
         }
-        
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');
-
-        return view('admin.expense_categories.create', compact('created_bies'));
+    
+        $laporanRef = $this->firestore->collection('laporan');
+        $query = $laporanRef;
+    
+        if ($request->filled('disasterType')) {
+            $query = $query->where('disasterType', '==', $request->input('disasterType'));
+        }
+    
+        if ($request->filled('startDate') && $request->filled('endDate')) {
+            $startDate = strtotime($request->input('startDate')) * 1000; // Convert to milliseconds
+            $endDate = strtotime($request->input('endDate')) * 1000; // Convert to milliseconds
+            $query = $query->where('timestamp', '>=', $startDate);
+        }
+    
+        $laporanDocuments = $query->documents();
+        $laporanData = [];
+    
+        foreach ($laporanDocuments as $document) {
+            if ($document->exists()) {
+                $laporanData[] = array_merge($document->data(), ['id' => $document->id()]);
+            }
+        }
+    
+        return view('admin.expense_categories.index', compact('laporanData'));
     }
 
     /**
-     * Store a newly created ExpenseCategory in storage.
-     *
-     * @param  \App\Http\Requests\StoreExpenseCategoriesRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreExpenseCategoriesRequest $request)
-    {
-        if (! Gate::allows('expense_category_create')) {
-            return abort(401);
-        }
-        $expense_category = ExpenseCategory::create($request->all());
-
-
-
-        return redirect()->route('admin.expense_categories.index');
-    }
-
-
-    /**
-     * Show the form for editing ExpenseCategory.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        if (! Gate::allows('expense_category_edit')) {
-            return abort(401);
-        }
-        
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');
-
-        $expense_category = ExpenseCategory::findOrFail($id);
-
-        return view('admin.expense_categories.edit', compact('expense_category', 'created_bies'));
-    }
-
-    /**
-     * Update ExpenseCategory in storage.
-     *
-     * @param  \App\Http\Requests\UpdateExpenseCategoriesRequest  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateExpenseCategoriesRequest $request, $id)
-    {
-        if (! Gate::allows('expense_category_edit')) {
-            return abort(401);
-        }
-        $expense_category = ExpenseCategory::findOrFail($id);
-        $expense_category->update($request->all());
-
-
-
-        return redirect()->route('admin.expense_categories.index');
-    }
-
-
-    /**
-     * Display ExpenseCategory.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        if (! Gate::allows('expense_category_view')) {
-            return abort(401);
-        }
-        
-        $created_bies = \App\User::get()->pluck('name', 'id')->prepend(trans('quickadmin.qa_please_select'), '');$expenses = \App\Expense::where('expense_category_id', $id)->get();
-
-        $expense_category = ExpenseCategory::findOrFail($id);
-
-        return view('admin.expense_categories.show', compact('expense_category', 'expenses'));
-    }
-
-
-    /**
-     * Remove ExpenseCategory from storage.
+     * Remove ExpenseCategory from Firestore.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -143,29 +69,29 @@ class ExpenseCategoriesController extends Controller
         if (! Gate::allows('expense_category_delete')) {
             return abort(401);
         }
-        $expense_category = ExpenseCategory::findOrFail($id);
-        $expense_category->delete();
+        
+        // Hapus data dari Firestore
+        $this->firestore->collection('laporan')->document($id)->delete();
 
         return redirect()->route('admin.expense_categories.index');
     }
 
     /**
-     * Delete all selected ExpenseCategory at once.
+     * Show details of a specific report from Firestore.
      *
-     * @param Request $request
+     * @param  string  $id
+     * @return \Illuminate\Http\Response
      */
-    public function massDestroy(Request $request)
+    public function show($id)
     {
-        if (! Gate::allows('expense_category_delete')) {
-            return abort(401);
+        $laporanSnapshot = $this->firestore->collection('laporan')->document($id)->snapshot();
+    
+        if (!$laporanSnapshot->exists()) {
+            abort(404, 'Laporan not found');
         }
-        if ($request->input('ids')) {
-            $entries = ExpenseCategory::whereIn('id', $request->input('ids'))->get();
-
-            foreach ($entries as $entry) {
-                $entry->delete();
-            }
-        }
+    
+        $laporan = $laporanSnapshot->data();
+    
+        return view('admin.expense_categories.show', compact('laporan'));
     }
-
 }

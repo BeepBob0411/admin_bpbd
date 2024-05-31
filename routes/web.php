@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
 Route::get('/', function () { return redirect('/admin/home'); });
 
 // Authentication Routes...
@@ -43,7 +44,12 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
     Route::post('currencies_restore/{id}', ['uses' => 'Admin\CurrenciesController@restore', 'as' => 'currencies.restore']);
     Route::delete('currencies_perma_del/{id}', ['uses' => 'Admin\CurrenciesController@perma_del', 'as' => 'currencies.perma_del']);
 
+    
+    Route::get('admin/laporan', [App\Http\Controllers\Admin\ExpenseCategoriesController::class, 'showReports'])->name('admin.laporan.index');
+    Route::get('/check-credentials', function () {
+        dd(env('GOOGLE_APPLICATION_CREDENTIALS'));
+    });
+    
 
-
- 
+    
 });

@@ -1,32 +1,24 @@
 <?php
+
 namespace App\Http\Requests\Admin;
 
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateUsersRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
     public function authorize()
     {
-        return true;
+        return \Gate::allows('user_edit');
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
     public function rules()
     {
         return [
-            
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,'.$this->route('user'),
-            'role_id' => 'required',
+            'email' => 'required|email|regex:/^[a-zA-Z0-9._%+-]+@gmail\.com$/|unique:users,email,' . $this->route('user'),
+            'password' => 'sometimes|nullable|string|min:8',
+            'nik' => 'required|digits:16|integer|unique:users,nik,' . $this->route('user'),
+            'phone' => 'required|integer',
+            'role_id' => 'required|integer|exists:roles,id',
         ];
     }
 }
