@@ -1,114 +1,64 @@
 @extends('layouts.app')
 
 @section('content')
-    <h3 class="page-title">@lang('quickadmin.expense-category.title')</h3>
-    {!! Form::open(['method' => 'POST', 'route' => ['admin.expense_categories.store'], 'enctype' => 'multipart/form-data']) !!}
+    <h3 class="page-title">@lang('Data Laporan Masyarakat')</h3>
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            @lang('quickadmin.qa_create')
+            @lang('Berita Bencana Alam')
         </div>
-        
+
         <div class="panel-body">
             <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('nama', trans('quickadmin.expense-category.fields.nama').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('nama', old('nama'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('nama'))
-                        <p class="help-block">
-                            {{ $errors->first('nama') }}
-                        </p>
-                    @endif
+                <div class="col-md-6">
+                    <table class="table table-bordered">
+                        <tr>
+                            <th>@lang('Jenis Bencana')</th>
+                            <td>{{ $laporan['disasterType'] ?? 'N/A' }}</td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Image')</th>
+                            <td>
+                                @if(isset($laporan['imageUrl']))
+                                    <img src="{{ $laporan['imageUrl'] }}" alt="Report Image" style="max-width: 100px; height: auto;">
+                                @else
+                                    <span>@lang('No Image Available')</span>
+                                @endif
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>@lang('Waktu Pelaporan')</th>
+                            <td>
+                                @if(isset($laporan['timestamp']))
+                                    {{ \Carbon\Carbon::parse($laporan['timestamp'])->format('Y-m-d H:i:s') }}
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                        </tr>
+                    </table>
                 </div>
             </div>
+
+            <!-- Formulir untuk membuat berita -->
             <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('telepon', trans('quickadmin.expense-category.fields.telepon').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('telepon', old('telepon'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('telepon'))
-                        <p class="help-block">
-                            {{ $errors->first('telepon') }}
-                        </p>
-                    @endif
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('nama_pelapor', trans('quickadmin.expense-category.fields.nama_pelapor').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('nama_pelapor', old('nama_pelapor'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('nama_pelapor'))
-                        <p class="help-block">
-                            {{ $errors->first('nama_pelapor') }}
-                        </p>
-                    @endif
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('foto_bencana', trans('quickadmin.expense-category.fields.foto_bencana').'*', ['class' => 'control-label']) !!}
-                    {!! Form::file('foto_bencana', ['class' => 'form-control', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('foto_bencana'))
-                        <p class="help-block">
-                            {{ $errors->first('foto_bencana') }}
-                        </p>
-                    @endif
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('jenis_bencana', trans('quickadmin.expense-category.fields.jenis_bencana').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('jenis_bencana', old('jenis_bencana'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('jenis_bencana'))
-                        <p class="help-block">
-                            {{ $errors->first('jenis_bencana') }}
-                        </p>
-                    @endif
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('lokasi_bencana', trans('quickadmin.expense-category.fields.lokasi_bencana').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('lokasi_bencana', old('lokasi_bencana'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('lokasi_bencana'))
-                        <p class="help-block">
-                            {{ $errors->first('lokasi_bencana') }}
-                        </p>
-                    @endif
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('keterangn_bencana', trans('quickadmin.expense-category.fields.keterangn_bencana').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('keterangn_bencana', old('keterangn_bencana'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('keterangn_bencana'))
-                        <p class="help-block">
-                            {{ $errors->first('keterangn_bencana') }}
-                        </p>
-                    @endif
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-xs-12 form-group">
-                    {!! Form::label('waktu_pengriman_laporan', trans('quickadmin.expense-category.fields.waktu_pengriman_laporan').'*', ['class' => 'control-label']) !!}
-                    {!! Form::text('waktu_pengriman_laporan', old('waktu_pengriman_laporan'), ['class' => 'form-control', 'placeholder' => '', 'required' => '']) !!}
-                    <p class="help-block"></p>
-                    @if($errors->has('waktu_pengriman_laporan'))
-                        <p class="help-block">
-                            {{ $errors->first('waktu_pengriman_laporan') }}
-                        </p>
-                    @endif
+                <div class="col-md-6">
+                    <h4>@lang('Buat Berita')</h4>
+                    <form action="{{ route('admin.expense_categories.store') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="laporan_id" value="{{ $laporan['id'] }}">
+
+                        <!-- Deskripsi Berita -->
+                        <div class="form-group">
+                            <label for="deskripsi_berita">@lang('Deskripsi Berita')</label>
+                            <textarea name="deskripsi_berita" id="deskripsi_berita" class="form-control" required>{{ old('deskripsi_berita') }}</textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary">@lang('Buat Berita')</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
-
-    {!! Form::submit(trans('quickadmin.qa_save'), ['class' => 'btn btn-danger']) !!}
-    {!! Form::close() !!}
-@stop
+@endsection

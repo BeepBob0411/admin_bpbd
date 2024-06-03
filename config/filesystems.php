@@ -73,6 +73,15 @@ return [
             'root' => public_path('uploads/test')
         ],
 
+        'firebase' => [
+            'driver' => 'firebase',
+            'project_id' => env('resqube-bcc0b'),
+            'bucket' => env('gs://resqube-bcc0b.appspot.com'),
+            'credentials' => [  
+                'file' => storage_path('D:/project/admin_bpbd/serviceAccount.json'), 
+            ],
+        ],
+
     ],
 
 ];

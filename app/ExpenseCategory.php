@@ -15,7 +15,7 @@ class ExpenseCategory extends Model
 {
     use FilterByUser;
 
-    protected $fillable = ['name', 'created_by_id'];
+    protected $fillable = ['name', 'created_by_id','judul', 'konten'];
     
     
 

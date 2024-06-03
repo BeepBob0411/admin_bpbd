@@ -20,7 +20,9 @@
                         <th>@lang('Status')</th>
                         <th>@lang('Waktu Pelaporan')</th>
                         <th>@lang('Pelapor')</th>
+                        <th>@lang('Status Berita')</th>
                         <th>@lang('Lihat Detail')</th>
+                        <th>@lang('Buat Berita')</th> <!-- Tombol Buat Berita -->
                     </tr>
                 </thead>
                 <tbody>
@@ -72,13 +74,23 @@
                                 </td>
                                 <td>{{ $report['userId'] }}</td>
                                 <td>
+                                    @if(isset($report['berita_created']) && $report['berita_created'])
+                                        <span class="badge bg-success">Sudah Dibuat Berita</span>
+                                    @else
+                                        <span class="badge bg-danger">Belum Dibuat Berita</span>
+                                    @endif
+                                </td>
+                                <td>
                                     <a href="{{ route('admin.expense_categories.show', $report['id']) }}" class="btn btn-info">Detail</a>
+                                </td>
+                                <td>
+                                    <a href="{{ route('admin.expense_categories.create', ['laporan_id' => $report['id']]) }}" class="btn btn-success">Buat Berita</a>
                                 </td>
                             </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="9">@lang('No data available')</td>
+                            <td colspan="11">@lang('No data available')</td>
                         </tr>
                     @endif
                 </tbody>

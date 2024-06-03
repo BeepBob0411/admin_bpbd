@@ -1,8 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ExpenseCategoriesController;
+use App\Http\Controllers\Admin\IncomeCategoriesController;
 
-Route::get('/', function () { return redirect('/admin/home'); });
+Route::get('/', function () {
+    return redirect('/admin/home');
+});
 
 // Authentication Routes...
 Route::get('login', 'Auth\LoginController@showLoginForm')->name('auth.login');
@@ -25,7 +29,7 @@ Route::post('register', 'Auth\RegisterController@register')->name('auth.register
 
 Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
     Route::get('/home', 'HomeController@index');
-    
+
     Route::resource('roles', 'Admin\RolesController');
     Route::post('roles_mass_destroy', ['uses' => 'Admin\RolesController@massDestroy', 'as' => 'roles.mass_destroy']);
     Route::resource('users', 'Admin\UsersController');
@@ -44,12 +48,23 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
     Route::post('currencies_restore/{id}', ['uses' => 'Admin\CurrenciesController@restore', 'as' => 'currencies.restore']);
     Route::delete('currencies_perma_del/{id}', ['uses' => 'Admin\CurrenciesController@perma_del', 'as' => 'currencies.perma_del']);
 
-    
-    Route::get('admin/laporan', [App\Http\Controllers\Admin\ExpenseCategoriesController::class, 'showReports'])->name('admin.laporan.index');
+    Route::get('laporan', [ExpenseCategoriesController::class, 'showReports'])->name('laporan.index');
     Route::get('/check-credentials', function () {
         dd(env('GOOGLE_APPLICATION_CREDENTIALS'));
     });
-    
 
-    
+    // Rute untuk menampilkan form create
+    Route::get('expense_categories/create', [ExpenseCategoriesController::class, 'create'])->name('expense_categories.create');
+
+    // Rute untuk menyimpan berita
+    Route::post('expense_categories/store', [ExpenseCategoriesController::class, 'store'])->name('expense_categories.store');
+
+    Route::get('income_categories/create_from_report/{id}', [IncomeCategoriesController::class, 'createFromReport'])->name('income_categories.create_from_report');
+    Route::post('income_categories/store_from_report', [IncomeCategoriesController::class, 'storeFromReport'])->name('income_categories.store_from_report');
+    Route::get('income_categories/{id}', [IncomeCategoriesController::class, 'show'])->name('income_categories.show');
+    Route::patch('income_categories/{id}', [IncomeCategoriesController::class, 'update'])->name('income_categories.update');
+    Route::delete('income_categories/{id}', [IncomeCategoriesController::class, 'destroy'])->name('income_categories.destroy');
+    Route::get('income_categories/loadMoreBerita', [IncomeCategoriesController::class, 'loadMoreBerita'])->name('income_categories.loadMoreBerita');
 });
+
+?>

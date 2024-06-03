@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Controllers\Controller;
 use Kreait\Firebase\Factory;
+use Kreait\Firebase\Exception\FirebaseException;
+use App\ExpenseCategory;
+use App\Report;
 
 class ExpenseCategoriesController extends Controller
 {
@@ -43,7 +46,7 @@ class ExpenseCategoriesController extends Controller
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $startDate = strtotime($request->input('startDate')) * 1000; // Convert to milliseconds
             $endDate = strtotime($request->input('endDate')) * 1000; // Convert to milliseconds
-            $query = $query->where('timestamp', '>=', $startDate);
+            $query = $query->where('timestamp', '>=', $startDate)->where('timestamp', '<=', $endDate);
         }
     
         $laporanDocuments = $query->documents();
@@ -57,6 +60,28 @@ class ExpenseCategoriesController extends Controller
     
         return view('admin.expense_categories.index', compact('laporanData'));
     }
+    
+    
+    public function create(Request $request)
+    {
+        // Ambil data laporan berdasarkan id dari request
+        $laporanId = $request->get('laporan_id');
+        if (!$laporanId) {
+            return redirect()->back()->with('error', 'Laporan ID tidak ditemukan dalam permintaan.');
+        }
+    
+        $laporanSnapshot = $this->firestore->collection('laporan')->document($laporanId)->snapshot();
+    
+        // Jika laporan tidak ditemukan, beri respon yang sesuai
+        if (!$laporanSnapshot->exists()) {
+            return redirect()->back()->with('error', 'Laporan tidak ditemukan.');
+        }
+    
+        $laporan = $laporanSnapshot->data();
+        $laporan['id'] = $laporanId;  // Tambahkan ID dokumen ke data laporan
+    
+        return view('admin.expense_categories.create', compact('laporan'));
+    }
 
     /**
      * Remove ExpenseCategory from Firestore.
@@ -66,7 +91,7 @@ class ExpenseCategoriesController extends Controller
      */
     public function destroy($id)
     {
-        if (! Gate::allows('expense_category_delete')) {
+        if (!Gate::allows('expense_category_delete')) {
             return abort(401);
         }
         
@@ -87,11 +112,67 @@ class ExpenseCategoriesController extends Controller
         $laporanSnapshot = $this->firestore->collection('laporan')->document($id)->snapshot();
     
         if (!$laporanSnapshot->exists()) {
-            abort(404, 'Laporan not found');
+            abort(404, 'Laporan tidak ditemukan.');
         }
-    
+
         $laporan = $laporanSnapshot->data();
     
         return view('admin.expense_categories.show', compact('laporan'));
+    }
+
+    public function store(Request $request)
+    {
+        $laporanId = $request->input('laporan_id');
+        $laporanSnapshot = $this->firestore->collection('laporan')->document($laporanId)->snapshot();
+        
+        if (!$laporanSnapshot->exists()) {
+            return redirect()->back()->with('error', 'Laporan tidak ditemukan.');
+        }
+
+        // Ambil data laporan
+        $laporanData = $laporanSnapshot->data();
+
+        // Tambahkan field 'berita_created' jika belum ada
+        if (!isset($laporanData['berita_created'])) {
+            $this->firestore->collection('laporan')->document($laporanId)->set([
+                'berita_created' => false,
+            ], ['merge' => true]);
+            // Refresh laporanData after setting the new field
+            $laporanSnapshot = $this->firestore->collection('laporan')->document($laporanId)->snapshot();
+            $laporanData = $laporanSnapshot->data();
+        }
+
+        // Cek apakah laporan sudah dijadikan berita sebelumnya
+        if ($laporanData['berita_created']) {
+            return redirect()->back()->with('error', 'Laporan ini sudah dijadikan berita sebelumnya.');
+        }
+
+        try {
+            // Tambahkan berita baru ke koleksi 'berita'
+            $this->firestore->collection('berita')->add([
+                'deskripsi' => $request->input('deskripsi_berita'),
+                'gambar' => $laporanData['imageUrl'],
+                'jenis_bencana' => $laporanData['disasterType'],
+                'waktu_pelaporan' => $laporanData['timestamp'],
+            ]);
+
+            // Tandai laporan sebagai sudah dijadikan berita
+            $this->firestore->collection('laporan')->document($laporanId)->set([
+                'berita_created' => true,
+            ], ['merge' => true]);
+
+            return redirect()->back()->with('success', 'Berita berhasil disimpan.');
+        } catch (\Exception $e) {
+            error_log('Error: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menyimpan berita. Terjadi kesalahan dalam penyimpanan data.');
+        }
+    }
+
+    public function getData()
+    {
+        // Implementasi untuk mengambil data dari ExpenseCategoriesController
+        // Misalnya, Anda bisa melakukan sesuatu seperti ini:
+        $expenseCategoriesData = ExpenseCategory::all();
+        return $expenseCategoriesData;
     }
 }
