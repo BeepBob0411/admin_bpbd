@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <h3 class="page-title">@lang('quickadmin.income.title')</h3>
+    <h3 class="page-title">@lang('Detail Peringatan')</h3>
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            @lang('quickadmin.qa_view')
+            @lang('Detail Peringatan')
         </div>
 
         <div class="panel-body table-responsive">
@@ -13,20 +13,16 @@
                 <div class="col-md-6">
                     <table class="table table-bordered table-striped">
                         <tr>
-                            <th>@lang('quickadmin.income.fields.income-category')</th>
-                            <td field-key='income_category'>{{ $income->income_category->name or '' }}</td>
+                            <th>Nama Bencana</th>
+                            <td>{{ $peringatan['nama_bencana'] ?? '' }}</td>
                         </tr>
                         <tr>
-                            <th>@lang('quickadmin.income.fields.entry-date')</th>
-                            <td field-key='entry_date'>{{ $income->entry_date }}</td>
+                            <th>Isi Peringatan</th>
+                            <td>{{ $peringatan['isi_peringatan'] ?? '' }}</td>
                         </tr>
                         <tr>
-                            <th>@lang('quickadmin.income.fields.amount')</th>
-                            <td field-key='amount'>{{ $income->income_currency->symbol . ' ' . number_format($income->amount, 2, $income->income_currency->money_format_decimal, $income->income_currency->money_format_thousands) }}</td>
-                        </tr>
-                        <tr>
-                            <th>@lang('quickadmin.income.fields.created-by')</th>
-                            <td field-key='created_by'>{{ $income->created_by->name or '' }}</td>
+                            <th>Waktu Peringatan</th>
+                            <td>{{ $peringatan['waktu_peringatan'] ?? '' }}</td>
                         </tr>
                     </table>
                 </div>
@@ -34,7 +30,7 @@
 
             <p>&nbsp;</p>
 
-            <a href="{{ route('admin.incomes.index') }}" class="btn btn-default">@lang('quickadmin.qa_back_to_list')</a>
+            <a href="{{ route('admin.peringatan.index') }}" class="btn btn-default">@lang('Kembali ke Daftar')</a>
         </div>
     </div>
 @stop

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-    <h3 class="page-title">@lang('quickadmin.income.title')</h3>
+    <h3 class="page-title">Daftar Peringatan</h3>
 
     <div class="panel panel-default">
         <div class="panel-heading">
-            @lang('quickadmin.qa_list')
+            Daftar Peringatan
         </div>
 
         <div class="panel-body table-responsive">
@@ -13,27 +13,27 @@
                 <thead>
                     <tr>
                         <th>Nama Bencana</th>
-                        <th>Isi Bencana</th>
-                        <th>@lang('aksi')</th>
+                        <th>Isi Peringatan</th>
+                        <th>Waktu Peringatan</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 
                 <tbody>
-                    @if (count($incomes) > 0)
-                        @foreach ($incomes as $income)
-                            <tr data-entry-id="{{ $income->id }}">
-                                <td>{{ $income->nama_bencana }}</td>
-                                <td>{{ $income->isi_bencana }}</td>
-                                <td>
-                                    <a href="{{ route('admin.incomes.edit',[$income->id]) }}" class="btn btn-xs btn-info">@lang('quickadmin.qa_edit')</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
+                    @forelse ($peringatanData as $peringatan)
                         <tr>
-                            <td colspan="3">@lang('quickadmin.qa_no_entries_in_table')</td>
+                            <td>{{ $peringatan['nama_bencana'] }}</td>
+                            <td>{{ $peringatan['isi_peringatan'] }}</td>
+                            <td>{{ $peringatan['waktu_peringatan']->toDate()->format('F j, Y \a\t h:i:s A') }}</td>
+                            <td>
+                                <!-- Tambahkan aksi sesuai kebutuhan -->
+                            </td>
                         </tr>
-                    @endif
+                    @empty
+                        <tr>
+                            <td colspan="4">Tidak ada peringatan.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
