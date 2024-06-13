@@ -32,35 +32,49 @@ class ExpenseCategoriesController extends Controller
      */
     public function index(Request $request)
     {
-        if (!Gate::allows('expense_category_access')) {
+        if (!Gate::allows('income_category_access')) {
             return abort(401);
         }
-    
+        
         $laporanRef = $this->firestore->collection('laporan');
         $query = $laporanRef;
-    
+
+        // Apply filters if provided
         if ($request->filled('disasterType')) {
-            $query = $query->where('disasterType', '==', $request->input('disasterType'));
+            $query = $query->where('disasterType', '=', $request->input('disasterType'));
         }
-    
+
         if ($request->filled('startDate') && $request->filled('endDate')) {
             $startDate = strtotime($request->input('startDate')) * 1000; // Convert to milliseconds
             $endDate = strtotime($request->input('endDate')) * 1000; // Convert to milliseconds
             $query = $query->where('timestamp', '>=', $startDate)->where('timestamp', '<=', $endDate);
         }
-    
-        $laporanDocuments = $query->documents();
+
+        // Paginate the results
+        $pageSize = 10; // Number of records per page
+        $startAfter = $request->input('startAfter');
+        
+        // Set the start cursor if provided
+        if ($startAfter) {
+            $query = $query->startAfter([$startAfter]);
+        }
+
+        // Execute the query and get the documents
+        $querySnapshot = $query->limit($pageSize)->documents();
         $laporanData = [];
-    
-        foreach ($laporanDocuments as $document) {
+
+        foreach ($querySnapshot as $document) {
             if ($document->exists()) {
                 $laporanData[] = array_merge($document->data(), ['id' => $document->id()]);
             }
         }
-    
-        return view('admin.expense_categories.index', compact('laporanData'));
-    }
-    
+
+        // Determine the next startAfter cursor for pagination
+        $lastDocument = end($laporanData);
+        $nextStartAfter = $lastDocument ? $lastDocument['id'] : null;
+
+        return view('admin.expense_categories.index', compact('laporanData', 'nextStartAfter'));
+    }    
     
     public function create(Request $request)
     {
@@ -97,9 +111,9 @@ class ExpenseCategoriesController extends Controller
         
         // Hapus data dari Firestore
         $this->firestore->collection('laporan')->document($id)->delete();
-
-        return redirect()->route('admin.expense_categories.index');
-    }
+    
+        return redirect()->route('admin.expense_categories.index')->with('success', 'Laporan berhasil dihapus.');
+    }    
 
     /**
      * Show details of a specific report from Firestore.
@@ -138,7 +152,7 @@ class ExpenseCategoriesController extends Controller
                 'berita_created' => false,
             ], ['merge' => true]);
             // Refresh laporanData after setting the new field
-            $laporanSnapshot = $this->firestore->collection('laporan')->document($laporanId)->snapshot();
+            $laporanSnapshot = $this->firestore->n('laporan')->document($laporanId)->snapshot();
             $laporanData = $laporanSnapshot->data();
         }
 
@@ -174,5 +188,30 @@ class ExpenseCategoriesController extends Controller
         // Misalnya, Anda bisa melakukan sesuatu seperti ini:
         $expenseCategoriesData = ExpenseCategory::all();
         return $expenseCategoriesData;
+    }
+
+    public function loadMoreLaporan(Request $request)
+    {
+        $laporanRef = $this->firestore->collection('laporan');
+        $query = $laporanRef;
+
+        // Mengambil halaman berikutnya dari data laporan, mengasumsikan adanya logika paginasi
+        $pageSize = 10; // Misalnya, ubah sesuai kebutuhan
+        $page = $request->input('page', 1); // Ambil nomor halaman dari permintaan
+
+        $querySnapshot = $query->offset(($page - 1) * $pageSize)
+                              ->limit($pageSize)
+                              ->documents();
+
+        $laporanData = [];
+
+        foreach ($querySnapshot as $document) {
+            if ($document->exists()) {
+                $laporanData[] = array_merge($document->data(), ['id' => $document->id()]);
+            }
+        }
+
+        // Mengembalikan tampilan Blade parsial dengan data laporan tambahan
+        return view('admin.expense_categories.loadMoreLaporan', compact('laporanData'));
     }
 }

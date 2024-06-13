@@ -12,28 +12,31 @@
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
-                        <th>Nama Bencana</th>
-                        <th>Isi Bencana</th>
-                        <th>@lang('aksi')</th>
+                        <th>@lang('quickadmin.income.fields.nama_bencana')</th>
+                        <th>@lang('quickadmin.income.fields.isi_peringatan')</th>
+                        <th>@lang('quickadmin.income.fields.waktu_peringatan')</th>
+                        <th>@lang('quickadmin.qa_action')</th>
                     </tr>
                 </thead>
-                
                 <tbody>
-                    @if (count($incomes) > 0)
-                        @foreach ($incomes as $income)
-                            <tr data-entry-id="{{ $income->id }}">
-                                <td>{{ $income->nama_bencana }}</td>
-                                <td>{{ $income->isi_bencana }}</td>
-                                <td>
-                                    <a href="{{ route('admin.incomes.edit',[$income->id]) }}" class="btn btn-xs btn-info">@lang('quickadmin.qa_edit')</a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    @else
+                    @forelse ($incomes as $income)
                         <tr>
-                            <td colspan="3">@lang('quickadmin.qa_no_entries_in_table')</td>
+                            <td>{{ $income->nama_bencana }}</td>
+                            <td>{{ $income->isi_peringatan }}</td>
+                            <td>{{ $income->waktu_peringatan }}</td>
+                            <td>
+                                <a href="{{ route('admin.incomes.edit', $income->id) }}" class="btn btn-xs btn-info">@lang('quickadmin.qa_edit')</a>
+                                <a href="{{ route('admin.incomes.show', $income->id) }}" class="btn btn-xs btn-primary">@lang('quickadmin.qa_view')</a>
+                                {!! Form::open(['method' => 'DELETE', 'route' => ['admin.incomes.destroy', $income->id], 'style' => 'display:inline']) !!}
+                                    {!! Form::submit(trans('quickadmin.qa_delete'), ['class' => 'btn btn-xs btn-danger', 'onclick' => "return confirm('".trans('quickadmin.qa_are_you_sure')."')"]) !!}
+                                {!! Form::close() !!}
+                            </td>
                         </tr>
-                    @endif
+                    @empty
+                        <tr>
+                            <td colspan="4">@lang('quickadmin.qa_no_entries_in_table')</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

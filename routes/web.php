@@ -28,43 +28,52 @@ Route::get('register', 'Auth\RegisterController@showRegistrationForm')->name('au
 Route::post('register', 'Auth\RegisterController@register')->name('auth.register');
 
 Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], function () {
-    Route::get('/home', 'HomeController@index');
+    Route::get('/home', 'HomeController@index')->name('home');
 
     Route::resource('roles', 'Admin\RolesController');
     Route::post('roles_mass_destroy', ['uses' => 'Admin\RolesController@massDestroy', 'as' => 'roles.mass_destroy']);
+    
     Route::resource('users', 'Admin\UsersController');
     Route::post('users_mass_destroy', ['uses' => 'Admin\UsersController@massDestroy', 'as' => 'users.mass_destroy']);
+    
     Route::resource('expense_categories', 'Admin\ExpenseCategoriesController');
     Route::post('expense_categories_mass_destroy', ['uses' => 'Admin\ExpenseCategoriesController@massDestroy', 'as' => 'expense_categories.mass_destroy']);
+    Route::get('expense_categories/loadMoreLaporan', [ExpenseCategoriesController::class, 'loadMoreLaporan'])->name('expense_categories.loadMoreLaporan');
+    
     Route::resource('income_categories', 'Admin\IncomeCategoriesController');
     Route::post('income_categories_mass_destroy', ['uses' => 'Admin\IncomeCategoriesController@massDestroy', 'as' => 'income_categories.mass_destroy']);
+    Route::get('income_categories/loadMoreBerita', [IncomeCategoriesController::class, 'loadMoreBerita'])->name('income_categories.loadMoreBerita');
+
     Route::resource('incomes', 'Admin\IncomesController');
     Route::post('incomes_mass_destroy', ['uses' => 'Admin\IncomesController@massDestroy', 'as' => 'incomes.mass_destroy']);
+    
     Route::resource('expenses', 'Admin\ExpensesController');
     Route::post('expenses_mass_destroy', ['uses' => 'Admin\ExpensesController@massDestroy', 'as' => 'expenses.mass_destroy']);
+    
     Route::resource('monthly_reports', 'Admin\MonthlyReportsController');
     Route::resource('currencies', 'Admin\CurrenciesController');
     Route::post('currencies_mass_destroy', ['uses' => 'Admin\CurrenciesController@massDestroy', 'as' => 'currencies.mass_destroy']);
     Route::post('currencies_restore/{id}', ['uses' => 'Admin\CurrenciesController@restore', 'as' => 'currencies.restore']);
     Route::delete('currencies_perma_del/{id}', ['uses' => 'Admin\CurrenciesController@perma_del', 'as' => 'currencies.perma_del']);
 
+    // Route to show reports (assuming this is what 'laporan.index' is for)
     Route::get('laporan', [ExpenseCategoriesController::class, 'showReports'])->name('laporan.index');
-    Route::get('/check-credentials', function () {
-        dd(env('GOOGLE_APPLICATION_CREDENTIALS'));
-    });
 
-    // Rute untuk menampilkan form create
+    // Route for creating expense categories
     Route::get('expense_categories/create', [ExpenseCategoriesController::class, 'create'])->name('expense_categories.create');
 
-    // Rute untuk menyimpan berita
+    // Route for storing expense categories (assuming this is what 'expense_categories.store' is for)
     Route::post('expense_categories/store', [ExpenseCategoriesController::class, 'store'])->name('expense_categories.store');
 
+    // Route for deleting an expense category
+    Route::delete('expense_categories/{id}', [ExpenseCategoriesController::class, 'destroy'])->name('expense_categories.delete');
+
+    // Route for creating income categories from a report
     Route::get('income_categories/create_from_report/{id}', [IncomeCategoriesController::class, 'createFromReport'])->name('income_categories.create_from_report');
+
+    // Additional routes as needed for incomes
     Route::post('income_categories/store_from_report', [IncomeCategoriesController::class, 'storeFromReport'])->name('income_categories.store_from_report');
     Route::get('income_categories/{id}', [IncomeCategoriesController::class, 'show'])->name('income_categories.show');
     Route::patch('income_categories/{id}', [IncomeCategoriesController::class, 'update'])->name('income_categories.update');
     Route::delete('income_categories/{id}', [IncomeCategoriesController::class, 'destroy'])->name('income_categories.destroy');
-    Route::get('income_categories/loadMoreBerita', [IncomeCategoriesController::class, 'loadMoreBerita'])->name('income_categories.loadMoreBerita');
 });
-
-?>

@@ -8,33 +8,27 @@
             @lang('quickadmin.qa_view')
         </div>
 
-        <div class="panel-body table-responsive">
+        <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
                     <table class="table table-bordered table-striped">
-                        <tr>
-                            <th>@lang('quickadmin.income.fields.income-category')</th>
-                            <td field-key='income_category'>{{ $income->income_category->name or '' }}</td>
-                        </tr>
-                        <tr>
-                            <th>@lang('quickadmin.income.fields.entry-date')</th>
-                            <td field-key='entry_date'>{{ $income->entry_date }}</td>
-                        </tr>
-                        <tr>
-                            <th>@lang('quickadmin.income.fields.amount')</th>
-                            <td field-key='amount'>{{ $income->income_currency->symbol . ' ' . number_format($income->amount, 2, $income->income_currency->money_format_decimal, $income->income_currency->money_format_thousands) }}</td>
-                        </tr>
-                        <tr>
-                            <th>@lang('quickadmin.income.fields.created-by')</th>
-                            <td field-key='created_by'>{{ $income->created_by->name or '' }}</td>
-                        </tr>
+                        <tbody>
+                            <tr>
+                                <th>@lang('quickadmin.income.fields.nama_bencana')</th>
+                                <td>{{ $income->nama_bencana }}</td>
+                            </tr>
+                            <tr>
+                                <th>@lang('quickadmin.income.fields.isi_peringatan')</th>
+                                <td>{{ $income->isi_peringatan }}</td>
+                            </tr>
+                            <tr>
+                                <th>@lang('quickadmin.income.fields.waktu_peringatan')</th>
+                                <td>{{ $income->waktu_peringatan->format('F j, Y \a\t h:i:s A T') }}</td>
+                            </tr>
+                        </tbody>
                     </table>
                 </div>
             </div>
-
-            <p>&nbsp;</p>
-
-            <a href="{{ route('admin.incomes.index') }}" class="btn btn-default">@lang('quickadmin.qa_back_to_list')</a>
         </div>
     </div>
-@stop
+@endsection
